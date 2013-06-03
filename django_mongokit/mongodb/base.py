@@ -14,6 +14,7 @@ from django.db.backends import (
 )
 from django.db.backends.creation import BaseDatabaseCreation
 from django.conf import settings
+from django.utils.functional import cached_property
 
 TEST_DATABASE_PREFIX = 'test_'
 
@@ -137,6 +138,14 @@ class DatabaseCreation(BaseDatabaseCreation):
             self.connection.connection.drop_database(database_name)
 
 
+class DatabaseFeatures(BaseDatabaseFeatures):
+    def __init__(self, connection):
+        super(DatabaseFeatures, self).__init__(connection)
+
+    @cached_property
+    def supports_transactions(self):
+        return False
+
 class DatabaseWrapper(BaseDatabaseWrapper):
     operators = {}
     _commit = ignore
@@ -161,7 +170,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         self.connection = ConnectionWrapper(**kwargs)
 
         try:
-            self.features = BaseDatabaseFeatures(self.connection)
+            self.features = DatabaseFeatures(self.connection)
         except TypeError:
             # Django < 1.3
             self.features = BaseDatabaseFeatures()
