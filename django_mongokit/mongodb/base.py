@@ -14,7 +14,6 @@ from django.db.backends import (
 )
 from django.db.backends.creation import BaseDatabaseCreation
 from django.conf import settings
-from django.utils.functional import cached_property
 
 TEST_DATABASE_PREFIX = 'test_'
 
@@ -142,7 +141,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     def __init__(self, connection):
         super(DatabaseFeatures, self).__init__(connection)
 
-    @cached_property
+    @property
     def supports_transactions(self):
         return False
 
